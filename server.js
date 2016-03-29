@@ -4,25 +4,17 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 
-//1 - X Add data.txt file to your directory. Insert some arbitrary text to the file. X
+//1 - We're going to redo PART II using fs.readFile and callbacks. This blocking code: var fileContents = fs.readFileSync('data.txt'); changes to this asynchronous code: fs.readFile('data.txt', function(err, data){ // do something with data here });
 
-//2 - X Include the File System core module by adding var fs = require('fs'); at the very top of the file. This provides file operations like read/write. X
+//2 - Move res.header(...) and res.send(...) into the fs.readFile callback so that they are executed after the file is read.
 
-//3 - X Read the documentation for fs.readFileSync. Read the data.txt file with var fileContents = fs.readFileSync('data.txt');. X
-
-//4 - Add res.header('Content-Type', 'text/html'); to add the HTTP response header that specifies the type of content we're sending to the browser.
-
-//5 - Use res.send to send the fileContents back to the user.
-
-//6 - Restart your node server and refresh your browser. You should now see the contents of your text file written out to the page!
-
+//3 - Restart your node server and request the localhost url again. You should see the same result as in PART II!
 
 
 // Create Express App Object \\
 var app = express();
 
 // read data.txt
-var fileContents = fs.readFileSync('./data.txt')
 // Application Configuration \\
 // appluse gets called on EVERY request \\
 
@@ -33,8 +25,11 @@ app.use(express.static(__dirname + '/public')); // <-- Used to serve CLIENT SIDE
 // Routes \\
 // Index/Home route => '/' \\
 app.get('/', function(req, res){
-  res.header('Content-Type', 'text/html')
-  res.send(fileContents)
+  fs.readFile('./data.txt', function(err, data){
+    res.header('Content-Type', 'text/html')
+    if(err) throw err
+    res.send(data)
+  })
 });
 
 // Creating Server and Listening for Connections \\
